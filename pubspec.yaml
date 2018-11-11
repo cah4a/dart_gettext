@@ -1,5 +1,5 @@
 name: gettext
-version: 1.0.0
+version: 1.0.1
 description: A Dart implementation of gettext, a localization framework.
 author: Alexander Kozlov <cah4o3@gmail.com>
 homepage: https://github.com/cah4a/dart_gettext

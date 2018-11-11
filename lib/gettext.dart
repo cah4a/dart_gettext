@@ -174,21 +174,23 @@ class Translations {
     return this.contexts[msgctxt][msgid];
   }
 
-  static Translations fromJson(Map<String, dynamic> contexts,
-      {Map<String, String> headers}) {
+  static Translations fromJson(Map<String, dynamic> contexts) {
     return new Translations(
       contexts.map((key, value) {
         final values = new Map<String, Translation>();
 
-        if (value is Map<String, Map<String, dynamic>>) {
-          values.addAll(
-            value.map(
-              (msgid, data) => MapEntry<String, Translation>(
-                    msgid,
-                    Translation.fromJSON(data),
-                  ),
-            ),
-          );
+        if (value is Map<String, dynamic>) {
+          value.forEach((msgid, json) {
+            if (json is Map && json["msgstr"] is List) {
+              values[msgid] = new Translation(
+                json["msgstr"]
+                    .map((row) => row.toString())
+                    .cast<String>()
+                    .toList(),
+                comments: json["comments"],
+              );
+            }
+          });
         }
 
         return MapEntry<String, Map<String, Translation>>(key, values);
@@ -199,11 +201,7 @@ class Translations {
 
 class Translation {
   final List<String> msgstr;
-  final Map<String, String> comments;
+  final Map<String, dynamic> comments;
 
   Translation(this.msgstr, {this.comments}) : assert(msgstr != null);
-
-  static Translation fromJSON(Map<String, dynamic> json) {
-    return new Translation(json["msgstr"], comments: json["comments"]);
-  }
 }

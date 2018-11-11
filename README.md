@@ -114,18 +114,18 @@ class GettextLocalizations {
   }
 
   String __(
-    String msgid, [
-    List args = const [],
-  ]) {
+      String msgid, [
+        List args = const [],
+      ]) {
     return sprintf(gt.gettext(msgid), args);
   }
 
   String __n(
-    String msgid,
-    String msgidPlural,
-    int count, [
-    List arg = const [],
-  ]) {
+      String msgid,
+      String msgidPlural,
+      int count, [
+        List arg = const [],
+      ]) {
     return sprintf(
       gt.ngettext(msgid, msgidPlural, count),
       <dynamic>[count]..addAll(arg),
@@ -144,12 +144,17 @@ class GettextLocalizationsDelegate
   bool shouldReload(LocalizationsDelegate<GettextLocalizations> old) => false;
 
   @override
-  Future<GettextLocalizations> load(Locale locale) {
-    return loadData(locale).then((data) {
-      gettext.locale = locale.toString();
-      gettext.addTranslations(locale.toString(), Translations.fromJson(data));
-      return GettextLocalizations(gettext);
-    });
+  Future<GettextLocalizations> load(Locale locale) async {
+    final data = await rootBundle.loadString("l10n/$locale.json");
+
+    final jsonData = json.decode(data);
+
+    gettext.locale = locale.toString();
+    gettext.addTranslations(locale.toString(), Translations.fromJson(jsonData));
+
+    return GettextLocalizations(gettext);
   }
 }
 ```
+
+See full [example](example/lib/main.dart)

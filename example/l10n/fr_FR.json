@@ -1,0 +1,10 @@
+{
+  "": {
+    "Hello, %s": {
+      "msgstr": ["Bonjour, %s"]
+    },
+    "Change": {
+      "msgstr": ["Changer"]
+    }
+  }
+}
