@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
-      //supportedLocales: locales,
+      supportedLocales: locales,
       home: Home(),
     );
   }
@@ -54,10 +54,10 @@ class Home extends StatelessWidget {
     final gt = GettextLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(gt.__("Hello, %s", ["UserName"]))),
+      appBar: AppBar(title: Text(gt.gettext("Hello, %s", ["UserName"]))),
       body: Center(
         child: RaisedButton(
-          child: Text(gt.__("Change")),
+          child: Text(gt.gettext("Change")),
           onPressed: () {
             MyApp.nextLocale(context);
           },
@@ -77,14 +77,14 @@ class GettextLocalizations {
         context, GettextLocalizations);
   }
 
-  String __(
+  String gettext(
       String msgid, [
         List args = const [],
       ]) {
     return sprintf(gt.gettext(msgid), args);
   }
 
-  String __n(
+  String ngettext(
       String msgid,
       String msgidPlural,
       int count, [
