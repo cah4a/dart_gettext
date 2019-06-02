@@ -1,0 +1,33 @@
+{
+  "charset": "utf-8",
+  "headers": {
+    "mime-version": "1.0",
+    "content-type": "text/plain; charset=utf-8",
+    "content-transfer-encoding": "8bit",
+    "language": "es-ES",
+    "plural-forms": "nplurals=2; plural=(n!=1);"
+  },
+  "translations": {
+    "": {
+      "Hello": {
+        "msgid": "Hello",
+        "comments": {
+          "translator": "Normal string"
+        },
+        "msgstr": [
+          "Hola"
+        ]
+      },
+      "An apple": {
+        "msgid": "1 apple",
+        "comments": {
+          "translator": "Plural string"
+        },
+        "msgstr": [
+          "una manzana",
+          "%d manzanas"
+        ]
+      }
+    }
+  }
+}

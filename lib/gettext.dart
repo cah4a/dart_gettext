@@ -4,14 +4,14 @@ import 'plurals.dart';
 
 typedef OnWarning(String message);
 
+/// Class for translating strings using gettext textdomains.
 class Gettext {
-  final Map<String, Catalog> catalogs = new Map();
+  final Map<String, Catalog> catalogs = {};
   final OnWarning onWarning;
 
   Gettext({this.onWarning});
 
   Function _pluralsFunc = (n) => 0;
-
   String _locale = '';
   String _domain = 'messages';
 
@@ -26,38 +26,55 @@ class Gettext {
 
   set domain(String value) => _locale = value ?? '';
 
-  /**
-   * Stores a set of translations in the set of gettext catalogs.
-   *
-   * @example
-   *     gt.addTranslations('sv-SE', translations, domain: 'messages')
-   *
-   * @param {String} locale        A locale string
-   * @param {String} domain        A domain name
-   * @param {Object} translations  An object of gettext-parser JSON shape
-   */
-  void addTranslations(String locale, Translations translations,
-      {String domain: 'messages'}) {
-    if (!catalogs.containsKey(locale)) {
-      catalogs[locale] = new Catalog({});
-    }
+  void addLocale(Map<String, dynamic> data, {String domain: 'messages'}) {
+    assert(data["headers"] is Map<String, String>);
+    assert(data["translations"] is Map<String, dynamic>);
+    addTranslations(
+      data["headers"]["language"],
+      data["translations"],
+      domain: domain,
+    );
+  }
 
-    catalogs[locale].addTranslations(domain, translations);
+  /// Stores a set of translations in the set of gettext catalogs.
+  ///
+  /// ```dart
+  /// gt.addTranslations('sv-SE', translations, domain: 'messages')
+  /// ```
+  ///
+  /// @param locale        A locale string
+  /// @param domain        A domain name
+  /// @param translations  An object of gettext-parser JSON shape
+  void addTranslations(String locale,
+      Map<String, dynamic> translations, {
+        String domain: 'messages',
+      }) {
+    final catalog = catalogs[locale] ?? Catalog({});
+
+    catalog.addTranslations(
+      domain,
+      Translations.fromJson(translations),
+    );
+
+    setCatalog(locale, catalog);
 
     if (_locale.isEmpty) {
       this.locale = locale;
     }
   }
 
-  /**
-   * Translates a string using the default textdomain
-   *
-   * @example
-   *     gt.gettext('Some text')
-   *
-   * @param  {String} msgid  String to be translated
-   * @return {String} Translation or the original string if no translation was found
-   */
+  void setCatalog(String locale, Catalog catalog) {
+    catalogs[locale] = catalog;
+  }
+
+  /// Translates a string using the default textdomain
+  ///
+  /// ```dart
+  /// gt.gettext('Some text')
+  /// ```
+  ///
+  /// @param  msgid  String to be translated
+  /// @returns Translation or the original string if no translation was found
   String gettext(String msgid, {String domain, String msgctxt = ''}) {
     final translation = this._getTranslation(
       domain ?? this.domain,
@@ -74,26 +91,27 @@ class Gettext {
     return translation.msgstr[0];
   }
 
-  /**
-   * Translates a plural string using the default textdomain
-   *
-   * @example
-   *     gt.ngettext('One thing', 'Many things', numberOfThings)
-   *
-   * @param  {String} msgid        String to be translated when count is not plural
-   * @param  {String} msgidPlural  String to be translated when count is plural
-   * @param  {Number} count        Number count for the plural
-   * @return {String} Translation or the original string if no translation was found
-   */
-  String ngettext(
-    String msgid,
-    String msgidPlural,
-    int count, {
-    String domain,
-    String msgctxt = '',
-  }) {
-    final translation =
-        this._getTranslation(domain ?? this.domain, msgctxt, msgid);
+  /// Translates a plural string using the default textdomain
+  ///
+  /// ```dart:
+  ///     gt.ngettext('One thing', 'Many things', numberOfThings)
+  /// ```
+  ///
+  /// @param  msgid        String to be translated when count is not plural
+  /// @param  msgidPlural  String to be translated when count is plural
+  /// @param  count        Number count for the plural
+  /// @returns Translation or the original string if no translation was found
+  String ngettext(String msgid,
+      String msgidPlural,
+      int count, {
+        String domain,
+        String msgctxt = '',
+      }) {
+    final translation = this._getTranslation(
+      domain ?? this.domain,
+      msgctxt,
+      msgid,
+    );
 
     final index = _pluralsFunc(count);
 
@@ -108,15 +126,13 @@ class Gettext {
     return translation.msgstr[index];
   }
 
-  /**
-   * Retrieves translation object from the domain and context
-   *
-   * @private
-   * @param  {String} domain   A gettext domain name
-   * @param  {String} msgctxt  Translation context
-   * @param  {String} msgid    String to be translated
-   * @return {Translation} Translation object or null if not found
-   */
+  /// Retrieves translation object from the domain and context
+  ///
+  /// @private
+  /// @param domain   A gettext domain name
+  /// @param msgctxt  Translation context
+  /// @param msgid    String to be translated
+  /// @returns Translation object or null if not found
   Translation _getTranslation(String domain, String msgctxt, String msgid) {
     assert(domain != null);
     assert(msgctxt != null);
@@ -125,17 +141,14 @@ class Gettext {
     return catalogs[_locale]?.getTranslation(domain, msgctxt, msgid);
   }
 
-  /**
-   * Returns the language code part of a locale
-   *
-   * @example
-   *     Gettext.getLanguageCode('sv-SE')
-   *     // -> "sv"
-   *
-   * @private
-   * @param   {String} locale  A case-insensitive locale string
-   * @returns {String} A language code
-   */
+  /// Returns the language code part of a locale
+  ///
+  /// ```dart
+  /// Gettext.getLanguageCode('sv-SE'); // -> "sv"
+  /// ```
+  ///
+  /// @param locale A case-insensitive locale string
+  /// @returns A language code
   static String getLanguageCode(String locale) {
     return locale.split(RegExp(r'[\-_]'))[0].toLowerCase();
   }
@@ -150,7 +163,7 @@ class Gettext {
 class Catalog {
   final Map<String, Translations> domains;
 
-  Catalog(this.domains);
+  const Catalog(this.domains);
 
   Translation getTranslation(String domain, String msgctxt, String msgid) {
     return this.domains[domain]?.getTranslation(msgctxt, msgid);
@@ -164,7 +177,7 @@ class Catalog {
 class Translations {
   final Map<String, Map<String, Translation>> contexts;
 
-  Translations(this.contexts);
+  const Translations(this.contexts);
 
   Translation getTranslation(String msgctxt, String msgid) {
     if (this.contexts[msgctxt] == null) {
@@ -203,5 +216,5 @@ class Translation {
   final List<String> msgstr;
   final Map<String, dynamic> comments;
 
-  Translation(this.msgstr, {this.comments}) : assert(msgstr != null);
+  const Translation(this.msgstr, {this.comments}) : assert(msgstr != null);
 }

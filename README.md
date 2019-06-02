@@ -22,18 +22,29 @@ import "package:gettext/gettext.dart";
 final gt = new Gettext(onWarning: print);
 ```
 
-Load data from json:
+Load messages from .json file:
 ```dart
 new File("./en_US.json").readAsString().then(
    (data) {
-       final json = json.decode(data["translations"]);
        final gt = new Gettext();
-       gt.addTranslations('en_US', Translations.fromJSON(json));
+       gt.addLocale(json.decode(data));
    }
 );
 ```
 
-Json content:
+Load messages from .mo or .po files using [gettext_parser](https://pub.dartlang.org/packages/gettext_parser):
+```dart
+import 'package:gettext_parser/gettext_parser.dart' as gettextParser;
+
+File("./en_US.mo").readAsString().then(
+   (data) {
+       final gt = new Gettext();
+       gt.addLocale(gettextParser.mo.parse(data));
+   }
+);
+```
+
+Json file content example:
 ```json
 {
   "charset": "utf-8",
@@ -42,7 +53,7 @@ Json content:
     "content-type": "text/plain; charset=utf-8",
     "content-transfer-encoding": "8bit",
     "language": "es-ES",
-    "plural-forms": "nplurals=2; plural=(n!=1);",
+    "plural-forms": "nplurals=2; plural=(n!=1);"
   },
   "translations": {
     "": {
@@ -90,71 +101,18 @@ Translate messages with plural forms:
 gt.ngettext("An apple", "%d apples", 3); // returns "%d apples"
 ```
 
+See [example](example/main.dart)
+
+
+## Usage with flutter
+
+Use [flutter_gettext](https://pub.dartlang.org/packages/flutter_gettext) package.
+
 
 ## API
 
+- addLocale(Map<String, dynamic> locale, {String domain: 'messages'})
+- addTranslations(String localeName, Map<String, dynamic> translations, {String domain: 'messages'})
+- setCatalog(String localeName, Catalog catalog)
 - gettext(String msgid, {String domain, String context}) → `String`
 - ngettext(String msgid, String msgplural, int count, {String domain, String context}) → `String`
-
-## Working with Flutter
-
-```dart
-import 'package:flutter/widgets.dart';
-import 'package:sprintf/sprintf.dart';
-import 'package:gettext/gettext.dart';
-
-class GettextLocalizations {
-  final Gettext gt;
-
-  GettextLocalizations(this.gt);
-
-  static GettextLocalizations of(BuildContext context) {
-    return Localizations.of<GettextLocalizations>(
-        context, GettextLocalizations);
-  }
-
-  String __(
-      String msgid, [
-        List args = const [],
-      ]) {
-    return sprintf(gt.gettext(msgid), args);
-  }
-
-  String __n(
-      String msgid,
-      String msgidPlural,
-      int count, [
-        List arg = const [],
-      ]) {
-    return sprintf(
-      gt.ngettext(msgid, msgidPlural, count),
-      <dynamic>[count]..addAll(arg),
-    );
-  }
-}
-
-class GettextLocalizationsDelegate
-    extends LocalizationsDelegate<GettextLocalizations> {
-  final gettext = new Gettext();
-
-  @override
-  bool isSupported(Locale locale) => true;
-
-  @override
-  bool shouldReload(LocalizationsDelegate<GettextLocalizations> old) => false;
-
-  @override
-  Future<GettextLocalizations> load(Locale locale) async {
-    final data = await rootBundle.loadString("l10n/$locale.json");
-
-    final jsonData = json.decode(data);
-
-    gettext.locale = locale.toString();
-    gettext.addTranslations(locale.toString(), Translations.fromJson(jsonData));
-
-    return GettextLocalizations(gettext);
-  }
-}
-```
-
-See full [example](example/lib/main.dart)

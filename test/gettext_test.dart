@@ -2,76 +2,80 @@ import 'package:gettext/gettext.dart';
 import 'package:test/test.dart';
 
 main() {
-  Gettext gt;
+  group("gettext", () {
+    Gettext gt;
 
-  setUp(() => gt = new Gettext());
-
-  test("getLanguageCode", () {
-    expect(
-      Gettext.getLanguageCode('ab-cd_ef.utf-8'),
-      'ab',
-    );
-
-    expect(
-      Gettext.getLanguageCode('ab-cd_ef'),
-      'ab',
-    );
-  });
-
-  test("Returns input if no translations", () {
-    expect(gt.gettext('input'), 'input');
-  });
-
-  test("Translates", () {
-    final translations = Translations.fromJson({
-      "": {
-        "input": {
-          "msgstr": ["output"]
-        }
-      }
+    setUp(() {
+      gt = new Gettext();
     });
 
-    gt
-      ..addTranslations('en-US', translations)
-      ..locale = 'en-US';
+    test("getLanguageCode", () {
+      expect(
+        Gettext.getLanguageCode('ab-cd_ef.utf-8'),
+        'ab',
+      );
 
-    expect(gt.gettext('input'), 'output');
-  });
+      expect(
+        Gettext.getLanguageCode('ab-cd_ef'),
+        'ab',
+      );
+    });
 
-  group("Works with plurals", () {
-    test("En", () {
-      final translations = Translations.fromJson({
+    test("Returns input if there is no translation", () {
+      expect(gt.gettext('input'), 'input');
+    });
+
+    test("Translates", () {
+      final translations = {
         "": {
           "input": {
-            "msgstr": ["output", "outputs"]
+            "msgstr": ["output"]
           }
         }
-      });
+      };
 
       gt
         ..addTranslations('en-US', translations)
         ..locale = 'en-US';
 
-      expect(gt.ngettext('input', 'inputs', 1), 'output');
-      expect(gt.ngettext('input', 'inputs', 2), 'outputs');
+      expect(gt.gettext('input'), 'output');
     });
 
-    test("Ru", () {
-      final translations = Translations.fromJson({
-        "": {
-          "input": {
-            "msgstr": ["карандаш", "карандаша", "карандашей"]
+    group("Works with plural forms", () {
+      test("En", () {
+        final translations = {
+          "": {
+            "input": {
+              "msgstr": ["output", "outputs"]
+            }
           }
-        }
+        };
+
+        gt
+          ..addTranslations('en-US', translations)
+          ..locale = 'en-US';
+
+        expect(gt.ngettext('input', 'inputs', 1), 'output');
+        expect(gt.ngettext('input', 'inputs', 2), 'outputs');
       });
 
-      gt
-        ..addTranslations('ru-RU', translations)
-        ..locale = 'ru-RU';
+      test("Ru", () {
+        final translations = {
+          "": {
+            "input": {
+              "msgstr": ["карандаш", "карандаша", "карандашей"]
+            }
+          }
+        };
 
-      expect(gt.ngettext('input', 'inputs', 1), 'карандаш');
-      expect(gt.ngettext('input', 'inputs', 2), 'карандаша');
-      expect(gt.ngettext('input', 'inputs', 10), 'карандашей');
+        gt
+          ..addTranslations('ru-RU', translations)
+          ..locale = 'ru-RU';
+
+        expect(gt.ngettext('input', 'inputs', 1), 'карандаш');
+        expect(gt.ngettext('input', 'inputs', 2), 'карандаша');
+        expect(gt.ngettext('input', 'inputs', 10), 'карандашей');
+      });
     });
   });
 }

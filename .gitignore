@@ -1,3 +1,5 @@
 .dart_tool
 .idea
 .packages
+.test_coverage.dart
+.vscode
