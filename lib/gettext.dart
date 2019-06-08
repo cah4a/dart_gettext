@@ -45,10 +45,11 @@ class Gettext {
   /// @param locale        A locale string
   /// @param domain        A domain name
   /// @param translations  An object of gettext-parser JSON shape
-  void addTranslations(String locale,
-      Map<String, dynamic> translations, {
-        String domain: 'messages',
-      }) {
+  void addTranslations(
+    String locale,
+    Map<String, dynamic> translations, {
+    String domain = 'messages',
+  }) {
     final catalog = catalogs[locale] ?? Catalog({});
 
     catalog.addTranslations(
@@ -101,12 +102,13 @@ class Gettext {
   /// @param  msgidPlural  String to be translated when count is plural
   /// @param  count        Number count for the plural
   /// @returns Translation or the original string if no translation was found
-  String ngettext(String msgid,
-      String msgidPlural,
-      int count, {
-        String domain,
-        String msgctxt = '',
-      }) {
+  String ngettext(
+    String msgid,
+    String msgidPlural,
+    int count, {
+    String domain,
+    String msgctxt = '',
+  }) {
     final translation = this._getTranslation(
       domain ?? this.domain,
       msgctxt,
