@@ -2,7 +2,7 @@
 
 A Dart implementation of gettext, a localization framework.
 
-Rewritten to dart of [node-gettext](https://github.com/alexanderwallin/node-gettext) package.
+Ported [node-gettext](https://github.com/alexanderwallin/node-gettext) package to dart.
 
 Also works perfectly with flutter.
 

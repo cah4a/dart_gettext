@@ -26,7 +26,7 @@ class Gettext {
 
   set domain(String value) => _locale = value ?? '';
 
-  void addLocale(Map<String, dynamic> data, {String domain: 'messages'}) {
+  void addLocale(Map<String, dynamic> data, {String domain = 'messages'}) {
     assert(data["headers"] is Map<String, String>);
     assert(data["translations"] is Map<String, dynamic>);
     addTranslations(
