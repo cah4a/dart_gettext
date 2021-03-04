@@ -3,11 +3,9 @@ import 'package:test/test.dart';
 
 main() {
   group("gettext", () {
-    Gettext gt;
+    late Gettext gt;
 
-    setUp(() {
-      gt = new Gettext();
-    });
+    setUp(() => gt = Gettext());
 
     test("getLanguageCode", () {
       expect(

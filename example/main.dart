@@ -6,7 +6,7 @@ import "package:gettext/gettext.dart";
 void main() async {
   final data = await File("./en_US.json").readAsString();
 
-  final gt = new Gettext();
+  final gt = Gettext();
   gt.addLocale(json.decode(data));
 
   print(gt.gettext("Hello"));

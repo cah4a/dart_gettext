@@ -8,11 +8,11 @@ class Plural {
   final PluralFunc pluralsFunc;
 
   Plural({
-    this.name,
-    this.examples,
-    this.nplurals,
-    this.pluralsText,
-    this.pluralsFunc,
+    required this.name,
+    required this.examples,
+    required this.nplurals,
+    required this.pluralsText,
+    required this.pluralsFunc,
   });
 }
 
@@ -134,7 +134,11 @@ final Map<String, Plural> plurals = {
             ? 1
             : n == 2
                 ? 2
-                : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5),
+                : n % 100 >= 3 && n % 100 <= 10
+                    ? 3
+                    : n % 100 >= 11
+                        ? 4
+                        : 5),
   ),
   "arn": Plural(
     name: 'Mapudungun',
@@ -369,7 +373,11 @@ final Map<String, Plural> plurals = {
     nplurals: 3,
     pluralsText:
         'nplurals = 3; plural = (n == 1 ? 0 : (n >= 2 && n <= 4) ? 1 : 2)',
-    pluralsFunc: (n) => (n == 1 ? 0 : (n >= 2 && n <= 4) ? 1 : 2),
+    pluralsFunc: (n) => (n == 1
+        ? 0
+        : (n >= 2 && n <= 4)
+            ? 1
+            : 2),
   ),
   "csb": Plural(
     name: 'Kashubian',
@@ -419,7 +427,13 @@ final Map<String, Plural> plurals = {
     nplurals: 4,
     pluralsText:
         'nplurals = 4; plural = (n == 1 ? 0 : n == 2 ? 1 : (n != 8 && n != 11) ? 2 : 3)',
-    pluralsFunc: (n) => (n == 1 ? 0 : n == 2 ? 1 : (n != 8 && n != 11) ? 2 : 3),
+    pluralsFunc: (n) => (n == 1
+        ? 0
+        : n == 2
+            ? 1
+            : (n != 8 && n != 11)
+                ? 2
+                : 3),
   ),
   "da": Plural(
     name: 'Danish',
@@ -728,7 +742,15 @@ final Map<String, Plural> plurals = {
     nplurals: 5,
     pluralsText:
         'nplurals = 5; plural = (n == 1 ? 0 : n == 2 ? 1 : n < 7 ? 2 : n < 11 ? 3 : 4)',
-    pluralsFunc: (n) => (n == 1 ? 0 : n == 2 ? 1 : n < 7 ? 2 : n < 11 ? 3 : 4),
+    pluralsFunc: (n) => (n == 1
+        ? 0
+        : n == 2
+            ? 1
+            : n < 7
+                ? 2
+                : n < 11
+                    ? 3
+                    : 4),
   ),
   "gd": Plural(
     name: 'Scottish Gaelic',
@@ -755,7 +777,11 @@ final Map<String, Plural> plurals = {
         'nplurals = 4; plural = ((n == 1 || n == 11) ? 0 : (n == 2 || n == 12) ? 1 : (n > 2 && n < 20) ? 2 : 3)',
     pluralsFunc: (n) => ((n == 1 || n == 11)
         ? 0
-        : (n == 2 || n == 12) ? 1 : (n > 2 && n < 20) ? 2 : 3),
+        : (n == 2 || n == 12)
+            ? 1
+            : (n > 2 && n < 20)
+                ? 2
+                : 3),
   ),
   "gl": Plural(
     name: 'Galician',
@@ -1113,7 +1139,13 @@ final Map<String, Plural> plurals = {
     nplurals: 4,
     pluralsText:
         'nplurals = 4; plural = (n == 1 ? 0 : n == 2 ? 1 : n == 3 ? 2 : 3)',
-    pluralsFunc: (n) => (n == 1 ? 0 : n == 2 ? 1 : n == 3 ? 2 : 3),
+    pluralsFunc: (n) => (n == 1
+        ? 0
+        : n == 2
+            ? 1
+            : n == 3
+                ? 2
+                : 3),
   ),
   "ky": Plural(
     name: 'Kyrgyz',
@@ -1192,7 +1224,9 @@ final Map<String, Plural> plurals = {
         'nplurals = 3; plural = (n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2)',
     pluralsFunc: (n) => (n % 10 == 1 && n % 100 != 11
         ? 0
-        : n % 10 >= 2 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2),
+        : n % 10 >= 2 && (n % 100 < 10 || n % 100 >= 20)
+            ? 1
+            : 2),
   ),
   "lv": Plural(
     name: 'Latvian',
@@ -1213,7 +1247,11 @@ final Map<String, Plural> plurals = {
     nplurals: 3,
     pluralsText:
         'nplurals = 3; plural = (n % 10 == 1 && n % 100 != 11 ? 0 : n != 0 ? 1 : 2)',
-    pluralsFunc: (n) => (n % 10 == 1 && n % 100 != 11 ? 0 : n != 0 ? 1 : 2),
+    pluralsFunc: (n) => (n % 10 == 1 && n % 100 != 11
+        ? 0
+        : n != 0
+            ? 1
+            : 2),
   ),
   "mai": Plural(
     name: 'Maithili',
@@ -1361,7 +1399,11 @@ final Map<String, Plural> plurals = {
     ],
     nplurals: 3,
     pluralsText: 'nplurals = 3; plural = (n == 0 ? 0 : n == 1 ? 1 : 2)',
-    pluralsFunc: (n) => (n == 0 ? 0 : n == 1 ? 1 : 2),
+    pluralsFunc: (n) => (n == 0
+        ? 0
+        : n == 1
+            ? 1
+            : 2),
   ),
   "mr": Plural(
     name: 'Marathi',
@@ -1418,7 +1460,9 @@ final Map<String, Plural> plurals = {
         ? 0
         : n == 0 || (n % 100 > 1 && n % 100 < 11)
             ? 1
-            : (n % 100 > 10 && n % 100 < 20) ? 2 : 3),
+            : (n % 100 > 10 && n % 100 < 20)
+                ? 2
+                : 3),
   ),
   "my": Plural(
     name: 'Burmese',
@@ -1732,8 +1776,11 @@ final Map<String, Plural> plurals = {
     nplurals: 3,
     pluralsText:
         'nplurals = 3; plural = (n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20)) ? 1 : 2)',
-    pluralsFunc: (n) =>
-        (n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20)) ? 1 : 2),
+    pluralsFunc: (n) => (n == 1
+        ? 0
+        : (n == 0 || (n % 100 > 0 && n % 100 < 20))
+            ? 1
+            : 2),
   ),
   "ru": Plural(
     name: 'Russian',
@@ -1887,7 +1934,11 @@ final Map<String, Plural> plurals = {
     nplurals: 3,
     pluralsText:
         'nplurals = 3; plural = (n == 1 ? 0 : (n >= 2 && n <= 4) ? 1 : 2)',
-    pluralsFunc: (n) => (n == 1 ? 0 : (n >= 2 && n <= 4) ? 1 : 2),
+    pluralsFunc: (n) => (n == 1
+        ? 0
+        : (n >= 2 && n <= 4)
+            ? 1
+            : 2),
   ),
   "sl": Plural(
     name: 'Slovenian',
@@ -1914,7 +1965,11 @@ final Map<String, Plural> plurals = {
         'nplurals = 4; plural = (n % 100 == 1 ? 1 : n % 100 == 2 ? 2 : n % 100 == 3 || n % 100 == 4 ? 3 : 0)',
     pluralsFunc: (n) => (n % 100 == 1
         ? 1
-        : n % 100 == 2 ? 2 : n % 100 == 3 || n % 100 == 4 ? 3 : 0),
+        : n % 100 == 2
+            ? 2
+            : n % 100 == 3 || n % 100 == 4
+                ? 3
+                : 0),
   ),
   "so": Plural(
     name: 'Somali',

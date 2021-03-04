@@ -7,7 +7,7 @@ typedef OnWarning(String message);
 /// Class for translating strings using gettext textdomains.
 class Gettext {
   final Map<String, Catalog> catalogs = {};
-  final OnWarning onWarning;
+  final OnWarning? onWarning;
 
   Gettext({this.onWarning});
 
@@ -15,17 +15,49 @@ class Gettext {
   String _locale = '';
   String _domain = 'messages';
 
+  /// Returns current locale
   String get locale => _locale;
 
+  /// Set current locale
   set locale(String value) {
-    _locale = value ?? '';
-    _pluralsFunc = plurals[getLanguageCode(_locale)]?.pluralsFunc;
+    _locale = value;
+
+    final plural = plurals[getLanguageCode(_locale)];
+    if (plural != null) {
+      _pluralsFunc = plural.pluralsFunc;
+    }
   }
 
+  /// Returns current domain
   String get domain => _domain;
 
-  set domain(String value) => _locale = value ?? '';
+  /// Set current domain
+  set domain(String value) => _locale = value;
 
+  /// Adds new locale to gettext
+  ///
+  /// ```dart
+  /// final translations = {
+  ///   "myContext": {
+  ///      "hello": {
+  ///          "msgstr": ["hola"]
+  ///      }
+  ///   }
+  /// }
+  ///
+  /// final locale = {
+  ///   "headers": {
+  ///     "language": "es"
+  ///   },
+  ///   "translations": translations
+  /// }
+  ///
+  /// gt.addLocale(locale, domain: 'messages');
+  /// ```
+  ///
+  /// Params:
+  /// [locale] A locale string
+  /// [domain] A domain name
   void addLocale(Map<String, dynamic> data, {String domain = 'messages'}) {
     assert(data["headers"] is Map<String, String>);
     assert(data["translations"] is Map<String, dynamic>);
@@ -39,12 +71,21 @@ class Gettext {
   /// Stores a set of translations in the set of gettext catalogs.
   ///
   /// ```dart
-  /// gt.addTranslations('sv-SE', translations, domain: 'messages')
+  /// final translations = {
+  ///   "myContext": {
+  ///      "hello": {
+  ///          "msgstr": ["hola"]
+  ///      }
+  ///   }
+  /// }
+  ///
+  /// gt.addTranslations('es-ES', translations, domain: 'messages')
   /// ```
   ///
-  /// @param locale        A locale string
-  /// @param domain        A domain name
-  /// @param translations  An object of gettext-parser JSON shape
+  /// Params:
+  /// [locale] A locale string
+  /// [domain] A domain name
+  /// [translations] An object of gettext-parser JSON shape
   void addTranslations(
     String locale,
     Map<String, dynamic> translations, {
@@ -57,13 +98,14 @@ class Gettext {
       Translations.fromJson(translations),
     );
 
-    setCatalog(locale, catalog);
+    catalogs[locale] = catalog;
 
     if (_locale.isEmpty) {
       this.locale = locale;
     }
   }
 
+  @deprecated
   void setCatalog(String locale, Catalog catalog) {
     catalogs[locale] = catalog;
   }
@@ -76,14 +118,14 @@ class Gettext {
   ///
   /// @param  msgid  String to be translated
   /// @returns Translation or the original string if no translation was found
-  String gettext(String msgid, {String domain, String msgctxt = ''}) {
+  String gettext(String msgid, {String? domain, String msgctxt = ''}) {
     final translation = this._getTranslation(
       domain ?? this.domain,
       msgctxt,
       msgid,
     );
 
-    if (translation == null || translation.msgstr[0]?.isNotEmpty != true) {
+    if (translation == null || translation.msgstr[0].isNotEmpty != true) {
       _warn('No translation was found for '
           'msgid "$msgid" in msgctxt "$msgctxt" and domain "$domain"');
       return msgid;
@@ -106,7 +148,7 @@ class Gettext {
     String msgid,
     String msgidPlural,
     int count, {
-    String domain,
+    String? domain,
     String msgctxt = '',
   }) {
     final translation = this._getTranslation(
@@ -119,10 +161,10 @@ class Gettext {
 
     if (translation == null ||
         translation.msgstr.length <= index ||
-        translation.msgstr[index]?.isNotEmpty != true) {
+        translation.msgstr[index].isNotEmpty != true) {
       _warn('No translation was found for '
           'msgid "$msgid" in msgctxt "$msgctxt" and domain "$domain"');
-      return (count > 1) ? msgidPlural ?? msgid : msgid;
+      return (count > 1) ? msgidPlural : msgid;
     }
 
     return translation.msgstr[index];
@@ -135,11 +177,7 @@ class Gettext {
   /// @param msgctxt  Translation context
   /// @param msgid    String to be translated
   /// @returns Translation object or null if not found
-  Translation _getTranslation(String domain, String msgctxt, String msgid) {
-    assert(domain != null);
-    assert(msgctxt != null);
-    assert(msgid != null);
-
+  Translation? _getTranslation(String domain, String msgctxt, String msgid) {
     return catalogs[_locale]?.getTranslation(domain, msgctxt, msgid);
   }
 
@@ -157,47 +195,54 @@ class Gettext {
 
   _warn(String message) {
     if (onWarning != null) {
-      onWarning(message);
+      onWarning!(message);
     }
   }
 }
 
+/// Represents locale translations catalog
 class Catalog {
   final Map<String, Translations> domains;
 
   const Catalog(this.domains);
 
-  Translation getTranslation(String domain, String msgctxt, String msgid) {
+  /// Get translation by message id, context and domain
+  Translation? getTranslation(String domain, String msgctxt, String msgid) {
     return this.domains[domain]?.getTranslation(msgctxt, msgid);
   }
 
+  /// Add translations in some domain
   void addTranslations(String domain, Translations translations) {
     domains[domain] = translations;
   }
 }
 
+/// Represents translation domain
 class Translations {
   final Map<String, Map<String, Translation>> contexts;
 
   const Translations(this.contexts);
 
-  Translation getTranslation(String msgctxt, String msgid) {
-    if (this.contexts[msgctxt] == null) {
-      return null;
-    }
-
-    return this.contexts[msgctxt][msgid];
-  }
-
-  static Translations fromJson(Map<String, dynamic> contexts) {
-    return new Translations(
+  /// Factory to get translations from generic json structure
+  ///
+  /// ```dart
+  /// final translations = Translations.fromJson({
+  ///    "myContext": {
+  ///        "hello": {
+  ///           "msgstr": ["hola"]
+  ///        }
+  ///    }
+  /// })
+  /// ```
+  factory Translations.fromJson(Map<String, dynamic> contexts) {
+    return Translations(
       contexts.map((key, value) {
-        final values = new Map<String, Translation>();
+        final values = <String, Translation>{};
 
         if (value is Map<String, dynamic>) {
           value.forEach((msgid, json) {
             if (json is Map && json["msgstr"] is List) {
-              values[msgid] = new Translation(
+              values[msgid] = Translation(
                 json["msgstr"]
                     .map((row) => row.toString())
                     .cast<String>()
@@ -212,11 +257,21 @@ class Translations {
       }),
     );
   }
+
+  /// Get translation by message id and context
+  Translation? getTranslation(String msgctxt, String msgid) {
+    if (this.contexts[msgctxt] == null) {
+      return null;
+    }
+
+    return this.contexts[msgctxt]![msgid];
+  }
 }
 
+/// Data class that represents a translation entry
 class Translation {
   final List<String> msgstr;
-  final Map<String, dynamic> comments;
+  final Map<String, dynamic>? comments;
 
-  const Translation(this.msgstr, {this.comments}) : assert(msgstr != null);
+  const Translation(this.msgstr, {this.comments});
 }

@@ -3,3 +3,4 @@
 .packages
 .test_coverage.dart
 .vscode
+pubspec.lock
